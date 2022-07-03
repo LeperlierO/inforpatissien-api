@@ -11,12 +11,14 @@ namespace inforpatissien_api.Services
 {
     public class RecipeService
     {
-        public static List<IPMiniRecipeData> GetRecipes(IPParamPaginationData _param)
+        public static IPResponseRecipeData GetRecipes(IPParamPaginationData _param)
         {
+            IPResponseRecipeData response = new IPResponseRecipeData();
             List<IPMiniRecipeData> recipes = new List<IPMiniRecipeData>();
             MySqlConnection connect = new MySqlConnection(ConfigurationManager.ConnectionStrings["InforpatissienConnectionString"].ToString());
 
-            string sqlRequest = "SELECT * FROM IPRECIPE R " +
+            string sqlRequest = "SELECT *,COUNT(*) OVER() AS TOTAL " +
+                                "FROM IPRECIPE R " +
                                 "INNER JOIN IPRECIPEPHOTO RP ON R.RCPID = RP.RCPID AND RP.RPOMAIN = 1 " +
                                 "ORDER BY RCPDATE DESC ";
 
@@ -24,6 +26,8 @@ namespace inforpatissien_api.Services
 
             if (_param != null)
             {
+                response.current = _param.page;
+
                 sqlRequest += "LIMIT ? OFFSET ?";
                 cmd.Parameters.AddWithValue("limit", Common.ITEM_PER_PAGE);
                 cmd.Parameters.AddWithValue("offset", Common.ITEM_PER_PAGE * (Math.Max(_param.page,1) - 1));
@@ -38,6 +42,8 @@ namespace inforpatissien_api.Services
                 MySqlDataReader areader = cmd.ExecuteReader();
                 while (areader.Read())
                 {
+                    if (response.size <= 0) response.size = Convert.ToInt32(areader["TOTAL"]) / Common.ITEM_PER_PAGE;
+
                     recipes.Add(SqlDataReaderToMiniRecipe(areader));
                 }
                 areader.Close();
@@ -48,7 +54,9 @@ namespace inforpatissien_api.Services
                 connect.Close();
             }
 
-            return recipes;
+            response.data = recipes;
+
+            return response;
         }
 
         public static IPMiniRecipeData SqlDataReaderToMiniRecipe(MySqlDataReader _reader)
