@@ -11,29 +11,39 @@ namespace inforpatissien_api.Services
 {
     public class RecipeService
     {
-        public static List<IPRecipeData> GetRecipes()
+        public static List<IPMiniRecipeData> GetRecipes(IPParamPaginationData _param)
         {
-            List<IPRecipeData> recipes = new List<IPRecipeData>();
+            List<IPMiniRecipeData> recipes = new List<IPMiniRecipeData>();
             MySqlConnection connect = new MySqlConnection(ConfigurationManager.ConnectionStrings["InforpatissienConnectionString"].ToString());
 
-            string sqlRequest = "SELECT * FROM IPRECIPE";
+            string sqlRequest = "SELECT * FROM IPRECIPE R " +
+                                "INNER JOIN IPRECIPEPHOTO RP ON R.RCPID = RP.RCPID AND RP.RPOMAIN = 1 " +
+                                "ORDER BY RCPDATE DESC ";
 
-            MySqlCommand cmd = new MySqlCommand(sqlRequest, connect);
+            MySqlCommand cmd = new MySqlCommand(String.Empty, connect);
+
+            if (_param != null)
+            {
+                sqlRequest += "LIMIT ? OFFSET ?";
+                cmd.Parameters.AddWithValue("limit", Common.ITEM_PER_PAGE);
+                cmd.Parameters.AddWithValue("offset", Common.ITEM_PER_PAGE * (Math.Max(_param.page,1) - 1));
+            }
+
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.CommandText = sqlRequest;
+
             try
             {
                 connect.Open();
-                // On exécute notre requête
                 MySqlDataReader areader = cmd.ExecuteReader();
                 while (areader.Read())
                 {
-                    recipes.Add(OleDbDataReaderToRecipe(areader));
+                    recipes.Add(SqlDataReaderToMiniRecipe(areader));
                 }
                 areader.Close();
                 connect.Close();
             }
-            catch (OleDbException ex)
+            catch (MySqlException ex)
             {
                 connect.Close();
             }
@@ -41,13 +51,26 @@ namespace inforpatissien_api.Services
             return recipes;
         }
 
-        public static IPRecipeData OleDbDataReaderToRecipe(MySqlDataReader _reader)
+        public static IPMiniRecipeData SqlDataReaderToMiniRecipe(MySqlDataReader _reader)
         {
-            IPRecipeData recipe = new IPRecipeData();
+            IPMiniRecipeData recipe = new IPMiniRecipeData();
             recipe.id = Convert.ToInt32(_reader["RCPID"]);
             recipe.name = Convert.ToString(_reader["RCPNAME"]);
             recipe.description = Convert.ToString(_reader["RCPDESCRIPTION"]);
+            recipe.mainPhoto = SqlDataReaderToPhoto(_reader);
             return recipe;
+        }
+
+        public static IPRecipePhotoData SqlDataReaderToPhoto(MySqlDataReader _reader)
+        {
+            IPRecipePhotoData photo = new IPRecipePhotoData();
+            photo.id = Convert.ToInt32(_reader["RPOID"]);
+            photo.name = Convert.ToString(_reader["RPONAME"]);
+            photo.description = Convert.ToString(_reader["RPODESCRIPTION"]);
+            photo.url = Convert.ToString(_reader["RPOURL"]);
+            photo.main = Convert.ToBoolean(_reader["RPOMAIN"]);
+            photo.position = new IPRecipePhotoPositionData { horizontally = Convert.ToInt32(_reader["RPOVERTICALLY"]), vertically = Convert.ToInt32(_reader["RPOHORIZONTALLY"]) };
+            return photo;
         }
 
     }

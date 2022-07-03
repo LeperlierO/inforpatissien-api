@@ -16,12 +16,12 @@ namespace inforpatissien_api.Controllers
         /// </summary>
         [HttpGet]
         [Route("recipes")]
-        [ResponseType(typeof(List<IPRecipeData>))]
-        public HttpResponseMessage GetRecipes()
+        [ResponseType(typeof(IPResponseRecipeData))]
+        public HttpResponseMessage GetRecipes([FromUri] IPParamPaginationData param)
         {
             try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, RecipeService.GetRecipes());
+                return Request.CreateResponse(HttpStatusCode.OK, RecipeService.GetRecipes(param));
             }
             catch (HttpResponseException e)
             {
