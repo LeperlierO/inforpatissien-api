@@ -59,6 +59,61 @@ namespace inforpatissien_api.Services
             return response;
         }
 
+        public static IPRecipeData GetRecipe(string _recipeName)
+        {
+            IPRecipeData recipe = null;
+            MySqlConnection connect = new MySqlConnection(ConfigurationManager.ConnectionStrings["InforpatissienConnectionString"].ToString());
+
+            string sqlRequest = "SELECT * " +
+                                "FROM IPRECIPE R " +
+                                "INNER JOIN IPRECIPEPHOTO RP ON R.RCPID = RP.RCPID " +
+                                "WHERE RCPNAME = ?";
+            
+            MySqlCommand cmd = new MySqlCommand(String.Empty, connect);
+
+            cmd.Parameters.AddWithValue("name", _recipeName);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cmd.CommandText = sqlRequest;
+
+            try
+            {
+                connect.Open();
+                MySqlDataReader areader = cmd.ExecuteReader();
+                while (areader.Read())
+                {
+                    if(recipe == null)
+                    {
+                        recipe = SqlDataReaderToRecipe(areader);
+                        recipe.photos = new List<IPRecipePhotoData>();
+                    }
+
+                    recipe.photos.Add(SqlDataReaderToPhoto(areader));
+                }
+                areader.Close();
+                connect.Close();
+            }
+            catch (MySqlException ex)
+            {
+                connect.Close();
+            }
+
+            return recipe;
+        }
+
+        public static IPRecipeData SqlDataReaderToRecipe(MySqlDataReader _reader)
+        {
+            IPRecipeData recipe = new IPRecipeData();
+            recipe.id = Convert.ToInt32(_reader["RCPID"]);
+            recipe.name = Convert.ToString(_reader["RCPNAME"]);
+            recipe.description = Convert.ToString(_reader["RCPDESCRIPTION"]);
+            recipe.date = Convert.ToDateTime(_reader["RCPDATE"]);
+            recipe.success = (IPRecipeSuccess)Convert.ToInt32(_reader["RCPTOP"]);
+            recipe.difficulty = (IPRecipeDifficulty)Convert.ToInt32(_reader["RCPDIFFICULTY"]);
+            recipe.time = TimeSpan.FromMinutes(Convert.ToInt32(_reader["RCPTIME"]));
+            recipe.cost = Convert.ToInt32(_reader["RCPCOST"]);
+            return recipe;
+        }
+
         public static IPMiniRecipeData SqlDataReaderToMiniRecipe(MySqlDataReader _reader)
         {
             IPMiniRecipeData recipe = new IPMiniRecipeData();

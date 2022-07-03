@@ -29,6 +29,7 @@ namespace inforpatissien_api.Models
         public IPRecipeDifficulty difficulty { get; set; }
         public TimeSpan time { get; set; }
         public int cost { get; set; }
+        public List<IPRecipePhotoData> photos { get; set; }
     }
 
     public class IPMiniRecipeData
