@@ -24,14 +24,14 @@ namespace inforpatissien_api.Services
 
             MySqlCommand cmd = new MySqlCommand(String.Empty, connect);
 
-            if (_param != null)
-            {
-                response.current = _param.page;
+            if (_param == null) _param = new IPParamPaginationData { page = 1 };
+            _param.page = Math.Max(1, _param.page);
 
-                sqlRequest += "LIMIT ? OFFSET ?";
-                cmd.Parameters.AddWithValue("limit", Common.ITEM_PER_PAGE);
-                cmd.Parameters.AddWithValue("offset", Common.ITEM_PER_PAGE * (Math.Max(_param.page,1) - 1));
-            }
+            response.current = _param.page;
+
+            sqlRequest += "LIMIT ? OFFSET ?";
+            cmd.Parameters.AddWithValue("limit", Common.ITEM_PER_PAGE);
+            cmd.Parameters.AddWithValue("offset", Common.ITEM_PER_PAGE * (_param.page - 1));
 
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.CommandText = sqlRequest;
