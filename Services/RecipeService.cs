@@ -42,7 +42,7 @@ namespace inforpatissien_api.Services
                 MySqlDataReader areader = cmd.ExecuteReader();
                 while (areader.Read())
                 {
-                    if (response.size <= 0) response.size = Convert.ToInt32(areader["TOTAL"]) / Common.ITEM_PER_PAGE;
+                    if (response.size <= 0) response.size = Convert.ToInt32(Math.Ceiling(Convert.ToDouble((double)Convert.ToInt32(areader["TOTAL"]) / (double)Common.ITEM_PER_PAGE)));
 
                     recipes.Add(SqlDataReaderToMiniRecipe(areader));
                 }
