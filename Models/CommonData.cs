@@ -7,7 +7,7 @@ namespace inforpatissien_api.Models
 {
     public static class Common
     {
-        public static int ITEM_PER_PAGE = 1;
+        public static int ITEM_PER_PAGE = 8;
     }
 
     public class IPParamPaginationData
