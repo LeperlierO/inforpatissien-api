@@ -59,7 +59,7 @@ namespace inforpatissien_api.Services
             return response;
         }
 
-        public static IPRecipeData GetRecipe(string _recipeName)
+        public static IPRecipeData GetRecipe(string _recipeCode)
         {
             IPRecipeData recipe = null;
             MySqlConnection connect = new MySqlConnection(ConfigurationManager.ConnectionStrings["InforpatissienConnectionString"].ToString());
@@ -67,11 +67,11 @@ namespace inforpatissien_api.Services
             string sqlRequest = "SELECT * " +
                                 "FROM IPRECIPE R " +
                                 "INNER JOIN IPRECIPEPHOTO RP ON R.RCPID = RP.RCPID " +
-                                "WHERE RCPNAME = ?";
+                                "WHERE RCPCODE = ?";
             
             MySqlCommand cmd = new MySqlCommand(String.Empty, connect);
 
-            cmd.Parameters.AddWithValue("name", _recipeName);
+            cmd.Parameters.AddWithValue("code", _recipeCode);
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.CommandText = sqlRequest;
 
@@ -104,6 +104,7 @@ namespace inforpatissien_api.Services
         {
             IPRecipeData recipe = new IPRecipeData();
             recipe.id = Convert.ToInt32(_reader["RCPID"]);
+            recipe.code = Convert.ToString(_reader["RCPCODE"]);
             recipe.name = Convert.ToString(_reader["RCPNAME"]);
             recipe.description = Convert.ToString(_reader["RCPDESCRIPTION"]);
             recipe.date = Convert.ToDateTime(_reader["RCPDATE"]);
@@ -118,6 +119,7 @@ namespace inforpatissien_api.Services
         {
             IPMiniRecipeData recipe = new IPMiniRecipeData();
             recipe.id = Convert.ToInt32(_reader["RCPID"]);
+            recipe.code = Convert.ToString(_reader["RCPCODE"]);
             recipe.name = Convert.ToString(_reader["RCPNAME"]);
             recipe.description = Convert.ToString(_reader["RCPDESCRIPTION"]);
             recipe.mainPhoto = SqlDataReaderToPhoto(_reader);

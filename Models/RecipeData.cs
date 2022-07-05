@@ -22,6 +22,7 @@ namespace inforpatissien_api.Models
     public class IPRecipeData
     {
         public int id { get; set; }
+        public string code { get; set; }
         public string name { get; set; }
         public string description { get; set; }
         public DateTime date { get; set; }
@@ -35,6 +36,7 @@ namespace inforpatissien_api.Models
     public class IPMiniRecipeData
     {
         public int id { get; set; }
+        public string code { get; set; }
         public string name { get; set; }
         public string description { get; set; }
         public IPRecipePhotoData mainPhoto { get; set; }
