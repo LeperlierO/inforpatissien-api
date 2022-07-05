@@ -35,16 +35,16 @@ namespace inforpatissien_api.Controllers
         }
 
         /// <summary>
-        /// Récupération d'une recette par son nom
+        /// Récupération d'une recette par son code
         /// </summary>
         [HttpGet]
-        [Route("recipes/{recipeName}")]
+        [Route("recipes/{recipeCode}")]
         [ResponseType(typeof(IPRecipeData))]
-        public HttpResponseMessage GetRecipe(string recipeName)
+        public HttpResponseMessage GetRecipe(string recipeCode)
         {
             try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, RecipeService.GetRecipe(recipeName));
+                return Request.CreateResponse(HttpStatusCode.OK, RecipeService.GetRecipe(recipeCode));
             }
             catch (HttpResponseException e)
             {
