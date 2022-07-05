@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -18,6 +20,29 @@ namespace inforpatissien_api
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            Thread sleeper = new Thread(Sleeper);
+            sleeper.Start();
+        }
+
+        protected void Sleeper()
+        {
+            string url = "https://inforpatissien-api.azurewebsites.net/";
+            string parameters = "Help";
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(url);
+
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+            while (true)
+            {
+                if(DateTime.Now.Hour > 8 && DateTime.Now.Hour < 23)
+                {
+                    client.GetAsync(parameters);
+                    Thread.Sleep(120000);
+                }
+            }        
         }
     }
 }
