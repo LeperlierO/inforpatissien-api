@@ -37,12 +37,9 @@ namespace inforpatissien_api
 
             while (true)
             {
-                if(DateTime.Now.Hour > 8 && DateTime.Now.Hour < 23)
-                {
-                    client.GetAsync(parameters);
-                    Thread.Sleep(30000);
-                }
-            }        
+                client.GetAsync(parameters);
+                Thread.Sleep(1000);
+            }       
         }
     }
 }
