@@ -28,7 +28,7 @@ namespace inforpatissien_api
         protected void Sleeper()
         {
             string url = "https://inforpatissien-api.azurewebsites.net/";
-            string parameters = "recipe";
+            string parameters = "recipes";
 
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(url);
