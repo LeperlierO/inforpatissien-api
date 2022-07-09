@@ -14,7 +14,9 @@ namespace inforpatissien_api.Services
         public static IPResponseRecipeData GetRecipes(IPParamPaginationData _param)
         {
             IPResponseRecipeData response = new IPResponseRecipeData();
-            List<IPMiniRecipeData> recipes = new List<IPMiniRecipeData>();
+            List<IPRecipeData> recipes = new List<IPRecipeData>();
+            IPRecipeData recipe = null;
+
             MySqlConnection connect = new MySqlConnection(ConfigurationManager.ConnectionStrings["InforpatissienConnectionString"].ToString());
 
             string sqlRequest = "SELECT *,COUNT(*) OVER() AS TOTAL " +
@@ -44,8 +46,18 @@ namespace inforpatissien_api.Services
                 {
                     if (response.size <= 0) response.size = Convert.ToInt32(Math.Ceiling(Convert.ToDouble((double)Convert.ToInt32(areader["TOTAL"]) / (double)Common.ITEM_PER_PAGE)));
 
-                    recipes.Add(SqlDataReaderToMiniRecipe(areader));
+                    if(recipe == null || recipe.id != Convert.ToInt32(areader["RCPID"]))
+                    {
+                        if (recipe != null) recipes.Add(recipe);
+
+                        recipe = SqlDataReaderToRecipe(areader);
+                        recipe.photos = new List<IPRecipePhotoData>();
+                    }
+
+                    recipe.photos.Add(SqlDataReaderToPhoto(areader));
                 }
+
+                recipes.Add(recipe);
                 areader.Close();
                 connect.Close();
             }

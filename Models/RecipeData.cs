@@ -60,6 +60,6 @@ namespace inforpatissien_api.Models
 
     public class IPResponseRecipeData : IPResponsePaginationData
     {
-        public List<IPMiniRecipeData> data { get; set; }
+        public List<IPRecipeData> data { get; set; }
     }
 }
