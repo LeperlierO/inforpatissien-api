@@ -135,6 +135,30 @@ namespace inforpatissien_api.Controllers
         }
 
         /// <summary>
+        /// Modification des infos source/notes d'une réalisation
+        /// </summary>
+        [HttpPatch]
+        [Token]
+        [Route("realizations/{id:int=-1}")]
+        [ResponseType(typeof(void))]
+        public HttpResponseMessage SetRealizationAdditionals(int id, [FromBody] IFPBodyRealizationAdditionalsData body)
+        {
+            try
+            {
+                RealizationService.SetRealizationAdditionals(id, body);
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (HttpResponseException e)
+            {
+                return Request.CreateResponse(e.Response.StatusCode, new { Message = e.Response.ReasonPhrase });
+            }
+            catch (Exception e)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
         /// Upload de la photo d'une réalisation
         /// </summary>
         [HttpPost]

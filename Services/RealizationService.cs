@@ -282,6 +282,36 @@ namespace inforpatissien_api.Services
             }
         }
 
+        public static void SetRealizationAdditionals(int _id, IFPBodyRealizationAdditionalsData _additionals)
+        {
+            IFPUserData session = Common.GetSession();
+
+            SqlConnection connect = new SqlConnection(ConfigurationManager.ConnectionStrings["DB_CONNECT"].ToString());
+
+            string sqlRequest = "UPDATE IFPREALIZATION SET RLZSOURCE=@source, RLZNOTES=@notes WHERE RLZID=@id AND USRID=@user";
+
+            SqlCommand cmd = new SqlCommand(String.Empty, connect);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+            cmd.CommandText = sqlRequest;
+
+            cmd.Parameters.AddWithValue("source", _additionals.source);
+            cmd.Parameters.AddWithValue("notes", _additionals.notes);
+            cmd.Parameters.AddWithValue("id", _id);
+            cmd.Parameters.AddWithValue("user", session.id);
+
+            try
+            {
+                connect.Open();
+                cmd.ExecuteNonQuery();
+                connect.Close();
+            }
+            catch (SqlException ex)
+            {
+                connect.Close();
+            }
+        }
+
         public static void DeleteRealization(int _id)
         {
             IFPUserData session = Common.GetSession();
@@ -452,6 +482,8 @@ namespace inforpatissien_api.Services
             realization.success = Common.SqlDataReaderToSuccess(_reader);
             realization.time = TimeSpan.FromMinutes(Convert.ToInt32(_reader["RLZTIME"]));
             realization.cost = Convert.ToInt32(_reader["RLZCOST"]);
+            realization.source = Convert.ToString(_reader["RLZSOURCE"]);
+            realization.notes = Convert.ToString(_reader["RLZNOTES"]);
             return realization;
         }
 

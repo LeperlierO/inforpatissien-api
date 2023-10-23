@@ -17,6 +17,8 @@ namespace inforpatissien_api.Models
         public IFPSettingData success { get; set; }
         public TimeSpan time { get; set; }
         public int cost { get; set; }
+        public string source { get; set; }
+        public string notes { get; set; }
         public List<IFPPhotoData> photos { get; set; }
     }
 
@@ -30,6 +32,12 @@ namespace inforpatissien_api.Models
         public TimeSpan time { get; set; }
         public int cost { get; set; }
         public string mainPhoto { get; set; }
+    }
+
+    public class IFPBodyRealizationAdditionalsData
+    {
+        public string source { get; set; }
+        public string notes { get; set; }
     }
 
     public class IFPMiniRealizationData
