@@ -199,7 +199,7 @@ namespace inforpatissien_api.Services
 
             string sqlRequest = "DECLARE @id INT; " +
                                 "BEGIN TRANSACTION " +
-                                "INSERT INTO IFPREALIZATION VALUES(@code,@name,@description,@date,@top,@time,@cost,@userId); " +
+                                "INSERT INTO IFPREALIZATION VALUES(@code,@name,@description,@date,@top,@time,@cost,@userId, '', ''); " +
                                 "SET @id = SCOPE_IDENTITY(); " +
                                 "INSERT INTO IFPPHOTO VALUES(@id,@photoName,@photoDescription,@photoUrl,@photoMain,@photoVertically,@photoHorizontally, '', 0); " +
                                 "SELECT * FROM IFPREALIZATION R INNER JOIN IFPPHOTO P ON R.RLZID = P.RLZID INNER JOIN IFPSUCCESS S ON S.SCSID = R.SCSID WHERE R.RLZID = @id; " +
